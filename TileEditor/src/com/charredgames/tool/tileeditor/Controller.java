@@ -32,8 +32,12 @@ public class Controller {
 		int[] pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 		int pixel = 0;
 		ArrayList<TileImage> foundTiles = new ArrayList<TileImage>();
-		for(Position pos : Controller.gridPositions){
+		for(Position pos : spriteSheet){
 			if(!foundTiles.contains(pos.getImage())) foundTiles.add(pos.getImage());
+		}
+		
+		for(Position pos : gridPositions){
+			if(!foundTiles.contains(pos.getImage())) continue;
 			int num = 0xFFFFFFFF + foundTiles.indexOf(pos.getImage()) + 1 + colourOffset;
 			pixels[pixel] = num;
 			pixel++;
@@ -47,11 +51,15 @@ public class Controller {
 	
 	public static void generateData(File path, int colourOffset){
 		ArrayList<TileImage> foundTiles = new ArrayList<TileImage>();
+		for(Position pos : spriteSheet){
+			if(!foundTiles.contains(pos.getImage())) foundTiles.add(pos.getImage());
+		}
+		ArrayList<TileImage> usedTiles = new ArrayList<TileImage>();
 		try {
 			PrintWriter writer = new PrintWriter(path, "UTF-8");
 			for(Position pos : Controller.gridPositions){
-				if(!foundTiles.contains(pos.getImage())) {
-					foundTiles.add(pos.getImage());
+				if(!usedTiles.contains(pos.getImage())) {
+					usedTiles.add(pos.getImage());
 					int num = 0xFFFFFFFF + foundTiles.indexOf(pos.getImage()) + 1 + colourOffset;
 					writer.println("public static final Tile tile" + foundTiles.indexOf(pos.getImage()) + " = new Tile(\"0xFF" + String.format("%06d",num) + "\", false);");
 				}
